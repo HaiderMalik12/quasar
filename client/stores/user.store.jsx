@@ -141,6 +141,7 @@ var UserStore = function() {
           if (!err) {
             _this.on.loginSuccess();
           } else {
+            console.error(err);
             _this.on.loginFailed(err);
           }
         });
