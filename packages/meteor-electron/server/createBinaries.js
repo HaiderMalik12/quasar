@@ -10,6 +10,7 @@ var stat = Meteor.wrapAsync(fs.stat);
 var util = Npm.require('util');
 var rimraf = Meteor.wrapAsync(Npm.require('rimraf'));
 var ncp = Meteor.wrapAsync(Npm.require('ncp'));
+var urlJoin = Npm.require('url-join');
 
 var exec = Meteor.wrapAsync(function(command, options, callback){
   proc.exec(command, options, function(err, stdout, stderr){
@@ -48,11 +49,15 @@ createBinaries = function() {
     builds = electronSettings.builds;
   } else {
     //just build for the current platform/architecture
-    // TODO(wearhere): Re-enable this once https://github.com/rissem/meteor-electron/issues/39 is
-    // fixed.
-    // builds = [{platform: process.platform, arch: process.arch}];
-    console.error('You must specify one or more builds in Meteor.settings.electron.');
-    return results;
+    if (process.platform === "darwin"){
+      builds = [{platform: process.platform, arch: process.arch}];
+    } else if (process.platform === "win32"){
+      //arch detection doesn't always work on windows, and ia32 works everywhere
+      builds = [{platform: process.platform, arch: "ia32"}];
+    } else {
+      console.error('You must specify one or more builds in Meteor.settings.electron.');
+      return results;
+    }
   }
 
   if (_.isEmpty(builds)) {
@@ -77,7 +82,7 @@ createBinaries = function() {
       // See http://stackoverflow.com/a/29745318/495611 for how the package asset directory is derived.
       // We can't read this from the project directory like the user-specified app directory since
       // we may be loaded from Atmosphere rather than locally.
-      resolvedAppSrcDir = path.join(process.cwd(), 'assets', 'packages', 'quark_electron', 'app');
+      resolvedAppSrcDir = path.join(process.cwd(), 'assets', 'packages', 'meson_electron', 'app');
     }
 
     // Check if the package.json has changed before copying over the app files, to account for
@@ -192,17 +197,23 @@ createBinaries = function() {
       // https://github.com/Squirrel/Squirrel.Mac#update-json-format
       var downloadName = (appName || "app") + ".zip";
       var compressedDownload = path.join(buildDirs.final, downloadName);
-      var compressedConsumableDownload = path.join(buildDirs.download, downloadName);
 
       if (buildRequired || !exists(compressedDownload)) {
         // Use `ditto` to ZIP the app because I couldn't find a good npm module to do it and also that's
         // what a couple of other related projects do:
         // - https://github.com/Squirrel/Squirrel.Mac/blob/8caa2fa2007b29a253f7f5be8fc9f36ace6aa30e/Squirrel/SQRLZipArchiver.h#L24
         // - https://github.com/jenslind/electron-release/blob/4a2a701c18664ec668c3570c3907c0fee72f5e2a/index.js#L109
-        exec('ditto -ck --sequesterRsrc --keepParent "' + app + '" "' + compressedDownload + '"');
-        exec('ditto -ck --sequesterRsrc --keepParent "' + app + '" "' + compressedConsumableDownload + '"');
-        console.log("Downloadable created at", compressedDownload);
-        console.log("Downloadable created at", compressedConsumableDownload);
+
+        function buildZip(location){
+          exec('ditto -ck --sequesterRsrc --keepParent "' + app + '" "' + location + '"');
+          console.log("Downloadable created at", location);
+        }
+
+        buildZip(compressedDownload);
+
+        if(!!buildDirs.download && !!buildDirs.download.darwin){
+          buildZip(buildDirs.download.darwin);
+        }
       }
     }
 
@@ -239,10 +250,23 @@ function createBuildDirectories(build){
 
   // *finalDir* contains zipped apps ready to be downloaded
   var finalDir = path.join(workingDir, "final");
-  var downloadDir = path.join(projectRoot(), "public", "downloads", build.platform + "-" + build.arch);
-
   mkdirp(finalDir);
-  mkdirp(downloadDir);
+
+  // add local downloaUrls to final build
+  DOWNLOAD_URLS = {
+    darwin: parseMacDownloadUrl(Meteor.settings.electron),
+    win32: parseWindowsDownloadUrls(Meteor.settings.electron)
+  };
+
+  var downloadDirs = {};
+  if(!!DOWNLOAD_URLS.darwin && !DOWNLOAD_URLS.darwin.startsWith("http")) {
+    downloadDirs.darwin = urlJoin(projectRoot(), DOWNLOAD_URLS.darwin);
+  }
+
+  if(!!DOWNLOAD_URLS.win32 && !!DOWNLOAD_URLS.win32.installer &&
+    !DOWNLOAD_URLS.win32.installer.startsWith("http")) {
+    downloadDirs.win32 = urlJoin(projectRoot(), DOWNLOAD_URLS.win32.installer);
+  }
 
   return {
     working: workingDir,
@@ -250,7 +274,7 @@ function createBuildDirectories(build){
     app: appDir,
     build: buildDir,
     final: finalDir,
-    download: downloadDir
+    download: downloadDirs
   };
 }
 

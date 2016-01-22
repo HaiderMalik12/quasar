@@ -11,20 +11,9 @@ Some of the things it does:
 
 ![](docs/overview.png)
 
-## Disclaimer
-
-If you're visiting from [the introductory blog post](https://mixmax.com/blog/turnkey-electron-apps-with-meteor),
-welcome! This package is already being used in production, but the documentation still needs a bit
-of work and it has not been published to Atmosphere yet. If you'd like to try it out, clone/copy it
-into your project's `packages` directory and then add it as in [Getting Started](#getting-started).
-
-We ([@rissem](https://twitter.com/rissem) and [@wearhere](https://twitter.com/wear_here)) are
-presenting about this at the [1/21 Meteor Night](http://www.meetup.com/Meteor-SFBay/events/227198908/)
-and we will have addressed the above issues by that date.
-
 ## Getting Started
 
-`meteor add quark:electron`
+`meteor add meson:electron`
 
 meteor-electron will download the Electron binary for your system and build and launch an Electron
 app pointing to your local development server. The download process may take a few minutes based on
@@ -32,7 +21,7 @@ your Internet connection but only needs to be done once.
 
 The app, as well as the ready-to-distribute binaries (see [Deploy](#deploy)), is built within
 `YOUR_PROJECT_DIRECTORY/.meteor-electron`. This allows the apps to be easily located as well as the
-apps to be cached for speedier startup. You should add this directory to your `.gitignore`.
+builds to be cached for speedier startup. You should add this directory to your `.gitignore`.
 
 ## Configuration
 
