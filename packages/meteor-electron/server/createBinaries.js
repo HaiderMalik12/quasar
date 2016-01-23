@@ -211,8 +211,8 @@ createBinaries = function() {
 
         buildZip(compressedDownload);
 
-        if(!!buildDirs.download && !!buildDirs.download.darwin){
-          buildZip(buildDirs.download.darwin);
+        if (!!buildDirs.download && !!buildDirs.download[buildInfo.platform]) {
+          buildZip(buildDirs.download[buildInfo.platform]);
         }
       }
     }
