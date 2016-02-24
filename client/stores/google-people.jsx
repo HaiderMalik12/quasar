@@ -19,7 +19,9 @@
  *
  */
 
-let GooglePeopleService = function() {
+import moment from 'moment';
+
+export default GooglePeople = function() {
   let readyForUse = false;  // Google People API isn't ready for production
   let contacts;
 
@@ -133,5 +135,3 @@ let GooglePeopleService = function() {
     readyForUse: readyForUse
   };
 };
-
-GooglePeople = new GooglePeopleService();
