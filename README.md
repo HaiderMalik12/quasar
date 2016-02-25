@@ -23,8 +23,9 @@ It is also an example of how to create a WebRTC video chatroom and of how to int
 
 1. Clone the project <code>git clone https://github.com/srtucker22/quasar.git</code>
 2. Go to the primary directory <code>cd quasar</code>
-3. Add a settings.json to the primary directory <code>touch settings.json</code>
-4. Add your personal settings for the following services included in quasar (or remove the ones you don't want)
+3. Install the node modules <code>npm install</code>
+4. Add a settings.json to the primary directory <code>touch settings.json</code>
+5. Add your personal settings for the following services included in quasar (or remove the ones you don't want)
 
         {
           "admins": [{
@@ -77,7 +78,7 @@ It is also an example of how to create a WebRTC video chatroom and of how to int
           }
         }
 
-5. Run the app with the settings <code>meteor --settings settings.json</code>
+6. Run the app with the settings <code>meteor --settings settings.json</code>
 
 ### Deployment Notes:
 
