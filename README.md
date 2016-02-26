@@ -75,7 +75,22 @@ It is also an example of how to create a WebRTC video chatroom and of how to int
               "name": "quasar",
               "schemes": ["quasar"]
             }]
-          }
+          },
+          "push": {
+            "gcm": {
+              "apiKey": "YOUR_API_KEY",
+              "projectNumber": "YOUR_PROJECT_NUMBER"
+            },
+            "production": false,
+            "badge": true,
+            "sound": true,
+            "alert": true,
+            "icon": "ic_stat_pushicon",
+            "iconColor": "#00bcd4",
+            "vibrate": true,
+            "sendInterval": 15000,
+            "sendBatchSize": 1
+          },
         }
 
 6. Run the app with the settings <code>meteor --settings settings.json</code>
