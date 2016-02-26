@@ -6,6 +6,7 @@ Meteor.methods({
       title: title,
       text: text,
       badge: badge,
+      sound: 'default',
       payload: {
         title: title,
         text: text,
