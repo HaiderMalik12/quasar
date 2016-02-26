@@ -46,14 +46,14 @@ function notifyOnlineInvitees(user, roomId, invitees, type) {
   });
 
   // test push
-  // Push.debug = true;
-  // Push.send({
-  //   from: 'Test',
-  //   title: 'Hello',
-  //   text: 'World',
-  //   badge: 12,
-  //   query: {}
-  // });
+  Push.debug = true;
+  Push.send({
+    from: 'Test',
+    title: 'Hello',
+    text: 'World',
+    badge: 12,
+    query: {}
+  });
 }
 
 function renderEmailTemplate(filename, vals) {

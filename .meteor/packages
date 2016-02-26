@@ -41,7 +41,6 @@ crosswalk
 long:google-contacts
 cfs:standard-packages
 http
-raix:push
 cfs:gridfs
 force-ssl
 msavin:mongol
@@ -50,3 +49,4 @@ standard-minifier-css
 standard-minifier-js
 ecmascript
 react-meteor-data
+raix:push

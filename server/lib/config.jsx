@@ -32,6 +32,7 @@ if (Meteor.settings.google) {
   });
 }
 
-if (Meteor.settings.push) {
-  Push.Configure(Meteor.settings.push);
-}
+// if (Meteor.settings.push) {
+//   Push.Configure(Meteor.settings.push);
+//   Push.debug = true;
+// }
