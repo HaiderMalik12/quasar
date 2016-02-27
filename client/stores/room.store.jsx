@@ -77,7 +77,7 @@ var RoomStore = function() {
   _.extend(_this, {
     retry() {
       if (_this.currentRoomId.get()) {
-        Meteor.call('notifyOnlineInvitees', _this.currentRoomId.get(),
+        Meteor.call('notifyInvitees', _this.currentRoomId.get(),
         _this.invitees.get(), 'invite', (err, res)=> {
           if (err) {
             _this.inviteError.set(err);
@@ -124,7 +124,7 @@ var RoomStore = function() {
     clearInvitees() {
       let invitees = _this.invitees.get();
       if (invitees && invitees.length) {
-        Meteor.call('notifyOnlineInvitees', _this.currentRoomId.get(), invitees, 'uninvite', (err, res)=> {
+        Meteor.call('notifyInvitees', _this.currentRoomId.get(), invitees, 'uninvite', (err, res)=> {
           if (err) {
             _this.inviteError.set(err);
           } else {

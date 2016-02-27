@@ -29,6 +29,13 @@ Dependency.autorun(()=> {
 
 // NotificationStore Creator
 var NotificationStore = function() {
+  // trigger actions when openning push notifications
+  Push.addListener('startup', function(notification) {
+    if (notification.payload.type === 'invite') {
+      console.log(notification.payload.roomId);
+    }
+  });
+
   var _this = this;
   _this.permission = ReactiveVar(null);
   _this.invitations = ReactiveVar([]);

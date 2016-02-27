@@ -44,16 +44,46 @@ function notifyOnlineInvitees(user, roomId, invitees, type) {
       type
     });
   });
+}
 
-  // test push
-  Push.debug = true;
-  Push.send({
-    from: 'Test',
-    title: 'Hello',
-    text: 'World',
-    badge: 12,
-    query: {}
-  });
+// if a user with a google account is invited, show them a notification
+function notifyInvitees(user, roomId, invitees, type) {
+  // get user invitees
+  let users = Meteor.users.find({
+    'services.google.email': {$in: _.pluck(invitees, 'email')},
+  }).fetch();
+
+  let userIds = _.pluck(users, '_id');
+
+  if (!!userIds && userIds.length && type === 'invite') {
+    // send a push notification to all available users
+    const title = 'New Chat Invitation';
+    const text = user.profile.name + ' has invited you to a chat';
+    const badge = 1;
+    let push = Push.send({
+      from: Math.random().toString(36).substring(7),  // set a random string
+      title,
+      text,
+      badge: badge,
+      payload: {
+        title,
+        roomId,
+        type
+      },
+      query: {
+        userId: {$in: userIds}
+      }
+    });
+
+    _.each(userIds, (id)=> {
+      notificationStream.emit(id, {
+        from: user.profile.name,
+        room: roomId,
+        url: urlJoin(roomURL, roomId),
+        type
+      });
+    });
+  }
 }
 
 function renderEmailTemplate(filename, vals) {
@@ -140,15 +170,15 @@ Meteor.methods({
 
       // if an invitee is a user but not online, we will notify them via notifications not emails
 
-      // notify online invitees with push notification
-      notifyOnlineInvitees(user, roomId, invitees, 'invite');
+      // notify invitees with push notification
+      notifyInvitees(user, roomId, invitees, 'invite');
 
     } catch (e) {
       throw new Meteor.Error(e.message);
     }
   },
 
-  notifyOnlineInvitees(roomId, invitees, type) {
+  notifyInvitees(roomId, invitees, type) {
     check(roomId, String);
     check(invitees, [Match.ObjectIncluding({email: String})]);
 
@@ -160,6 +190,6 @@ Meteor.methods({
 
     let user = Meteor.user();
 
-    notifyOnlineInvitees(user, roomId, invitees, type);
+    notifyInvitees(user, roomId, invitees, type);
   }
 });

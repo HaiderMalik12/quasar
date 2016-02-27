@@ -249,7 +249,7 @@ const ContactListComponent = Radium(React.createClass({
                   disabled={this.state.isScrolling}
                   key={'contact-' + index}
                   leftAvatar={<Avatar
-                    src={contact.src || 'images/profile-default.jpg'}
+                    src={contact.src || '/images/profile-default.jpg'}
 
                   />}
                   rightIcon={
@@ -299,7 +299,7 @@ export default TypeaheadContactComponent = Radium(React.createClass({
         tag={props.tag.name ? props.tag.name : props.tag.email}
         src={props.tag.src ? props.tag.src : ''}
         onError={(e)=> {
-          e.target.src = 'images/profile-default.jpg';
+          e.target.src = '/images/profile-default.jpg';
         }}
         mobile={_this.props.mobile}/>
     );
