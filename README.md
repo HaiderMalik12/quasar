@@ -25,23 +25,27 @@ It is also an example of how to create a WebRTC video chatroom and of how to int
 2. Go to the primary directory <code>cd quasar</code>
 3. Install the node modules <code>npm install</code>
 4. Add a settings.json to the primary directory <code>touch settings.json</code>
-5. Add your personal settings for the following services included in quasar (or remove the ones you don't want)
+5. Add your personal settings to the settings.json file for the following services included in quasar (or remove the ones you don't want) -- **be sure to remove the comments from this example file!**
 
         {
+          // Startup set of users with auth privileges
           "admins": [{
             "name": "Administrator",
             "email": "admin@example.com",
             "roles": ["admin"],
             "password": "ADMIN_PASSWORD"
           }],
+          // Google Auth
           "google" : {
             "clientId" : "YOUR_CLIENT_ID",
             "clientSecret" : "YOUR_CLIENT_SECRET"
           },
+          // Performance tracking
           "kadira": {
             "appId": "YOUR_APP_ID",
             "appSecret": "YOUR_APP_SECRET
           },
+          // User tracking
           "public": {
             "analyticsSettings": {
               "Google Analytics": {"trackingId": "YOUR_TRACKING_ID"},
@@ -50,7 +54,8 @@ It is also an example of how to create a WebRTC video chatroom and of how to int
             "google": {
               "browserKey": "YOUR_BROWSER_KEY"
             }
-          }
+          },
+          // Electron build settings -- do not include if you are on Linux or don't want to build an Electron app
           "electron": {
             "autoPackage": true,
             "builds": [{
@@ -75,25 +80,26 @@ It is also an example of how to create a WebRTC video chatroom and of how to int
               "name": "quasar",
               "schemes": ["quasar"]
             }]
-          },
-          "push": {
-            "gcm": {
-              "apiKey": "YOUR_API_KEY",
-              "projectNumber": "YOUR_PROJECT_NUMBER"
-            },
-            "production": false,
-            "badge": true,
-            "sound": true,
-            "alert": true,
-            "icon": "ic_stat_pushicon",
-            "iconColor": "#00bcd4",
-            "vibrate": true,
-            "sendInterval": 15000,
-            "sendBatchSize": 1
-          },
+          }
         }
 
-6. Run the app with the settings <code>meteor --settings settings.json</code>
+6. If you are building the cordova application, include a config.push.json at root level to set push notification settings <code>touch config.push.json</code>
+7. Add your push notification settings to the config.push.json file:
+        {
+          "gcm": {
+            "apiKey": "YOUR_API_KEY",
+            "projectNumber": "YOUR_PROJECT_NUMBER"
+          },
+          "production": false,
+          "badge": true,
+          "sound": true,
+          "alert": true,
+          "icon": "ic_stat_pushicon",
+          "iconColor": "#00bcd4",
+          "vibrate": true,
+          "sendInterval": 15000
+        }
+8. Run the app with the settings <code>meteor --settings settings.json</code>
 
 ### Deployment Notes:
 
@@ -101,17 +107,17 @@ To deploy to a remote server, consider using a package like <a href="https://git
 
 ### Android Cordova Notes:
 
-In order to run video conferencing on quasar as a cordova app, you will to have the latest version of Android Studio installed and **you will need to use an actual Android device** (currently tested with devices 4.3+). Plug in your device to your computer via USB and run
+In order to run video conferencing on quasar as a cordova app, you need the latest version of Android Studio installed and **you will need to use an actual Android device** (currently tested with devices 4.3+). Plug in your device to your computer via USB and run
 
-<code>meteor run android-device -p {local port} --settings settings.json</code>
+<code>meteor run android-device -p {local-port} --settings settings.json</code>
 
-In order to use Google auth, you will need to run the application from a live mobiles server (see <a href="https://github.com/meteor/meteor/wiki/OAuth-for-mobile-Meteor-clients">OAuth for Mobile Meteor Clients</a> for details). To do this, first deploy your meteor application to a live server.
+In order to use Google auth, you will need to run the application from a live mobile server (see <a href="https://github.com/meteor/meteor/wiki/OAuth-for-mobile-Meteor-clients">OAuth for Mobile Meteor Clients</a> for details). To do this, first deploy your meteor application to a live server.
 
 (e.g. <code>meteor deploy {your-server-url} --settings settings.json</code>)
 
 Once the app is successfully deployed, run:
 
-<code>meteor run android-device --mobile-server {your-server-url} --settings settings.json</code>
+<code>meteor run android-device --mobile-server https://{your-server-url} --settings settings.json</code>
 
 nice additional flags might be:
 <code>--verbose

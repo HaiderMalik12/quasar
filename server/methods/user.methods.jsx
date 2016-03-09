@@ -196,18 +196,21 @@ Meteor.methods({
 
     // this function is now async
     var fut = new Future();
+    try {
+      gcontacts = googleContacts(user);
 
-    gcontacts = googleContacts(user);
+      // callback updates the user with their contacts from Google
+      let callback = Meteor.bindEnvironment((err, contacts)=> {
+        // return the contacts
+        fut.return(contacts);
+      });
 
-    // callback updates the user with their contacts from Google
-    let callback = Meteor.bindEnvironment((err, contacts)=> {
-      // return the contacts
-      fut.return(contacts);
-    });
-
-    contactsRequester.makeRequest(
-      gcontacts.getContacts, gcontacts, [callback] // get the contacts from google
-    );
+      contactsRequester.makeRequest(
+        gcontacts.getContacts, gcontacts, [callback] // get the contacts from google
+      );
+    } catch (e) {
+      fut.throw(e);
+    }
 
     // return the promise
     return fut.wait();

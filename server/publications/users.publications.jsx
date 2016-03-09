@@ -22,10 +22,13 @@
 // publish current user
 Meteor.publish('user', function() {
   check(arguments, Match.OneOf({}, null, undefined));
-  return Meteor.users.find(
-    {_id: this.userId},
-    {fields: {services: 1, history: 1, status: 1}}
-  );
+  return [
+    Meteor.users.find(
+      {_id: this.userId},
+      {fields: {services: 1, history: 1, status: 1}}
+    ),
+    Notifications.find({owner: this.userId})
+  ];
 });
 
 // publish all users

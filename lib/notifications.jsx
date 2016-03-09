@@ -19,38 +19,82 @@
  *
  */
 
-Rooms = new Mongo.Collection('rooms');
+Notifications = new Mongo.Collection('notifications');
 
-var Schema = {};
+let Schema = {};
 
-Schema.Room = new SimpleSchema({
+Schema.Notification = new SimpleSchema({
+  // receiver of the notification
   owner: {
     type: String,
   },
 
-  // list of userIds currently connected to room
-  connected: {
-    type: [String],
+  // originator of the notification
+  from: {
+    type: String,
     optional: true,
+  },
+
+  // the type of notification
+  type: {
+    type: String,
+  },
+
+  roomId: {
+    type: String,
+    optional: true
+  },
+
+  url: {
+    type: String,
+    optional: true
+  },
+
+  viewed: {
+    type: Boolean,
+    defaultValue: false
+  },
+
+  createdAt: {
+    type: Date,
+    autoValue: function() {
+      if (this.isInsert) {
+        return new Date();
+      } else if (this.isUpsert) {
+        return {$setOnInsert: new Date()};
+      } else {
+        this.unset();  // Prevent user from supplying their own value
+      }
+    }
+  },
+  updatedAt: {
+    type: Date,
+    autoValue: function() {
+      if (this.isUpdate) {
+        return new Date();
+      }
+    },
+    denyInsert: true,
+    optional: true
   },
 });
 
-Rooms.attachSchema(Schema.Room);
+Notifications.attachSchema(Schema.Notification);
 
 // restrict modification access to authorized users
-Rooms.allow({
-  insert(userId, room) {
-    return room.owner === userId ||
+Notifications.allow({
+  insert(userId, notification) {
+    return notification.owner === userId ||
       (Roles.userIsInRole(userId, ['manage-users','admin']));
   },
 
-  update(userId, room, fields, modifier) { // TODO : make this more restrictive based on the fields
-    return room.owner === userId ||
-      (Roles.userIsInRole(userId, [room._id, 'manage-users','admin']));
+  update(userId, notification, fields, modifier) { // TODO : make this more restrictive based on the fields
+    return notification.owner === userId ||
+      (Roles.userIsInRole(userId, ['manage-users','admin']));
   },
 
-  remove(userId, room, fields, modifier) {
-    return room.owner === userId ||
+  remove(userId, notification, fields, modifier) {
+    return notification.owner === userId ||
       (Roles.userIsInRole(userId, ['manage-users','admin']));
   },
 

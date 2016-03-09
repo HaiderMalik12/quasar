@@ -55,33 +55,45 @@ function notifyInvitees(user, roomId, invitees, type) {
 
   let userIds = _.pluck(users, '_id');
 
-  if (!!userIds && userIds.length && type === 'invite') {
-    // send a push notification to all available users
-    const title = 'New Chat Invitation';
-    const text = user.profile.name + ' has invited you to a chat';
-    const badge = 1;
-    let push = Push.send({
-      from: Math.random().toString(36).substring(7),  // set a random string
-      title,
-      text,
-      badge: badge,
-      payload: {
+  if (!!userIds && userIds.length) {
+    if (type === 'invite') {
+      // send a push notification to all available users
+      const title = 'New Chat Invitation';
+      const text = user.profile.name + ' has invited you to a chat';
+      const badge = 1;
+      let push = Push.send({
+        from: Math.random().toString(36).substring(7),  // set a random string
         title,
-        roomId,
-        type
-      },
-      query: {
-        userId: {$in: userIds}
-      }
-    });
+        text,
+        badge: badge,
+        payload: {
+          title,
+          roomId,
+          type
+        },
+        query: {
+          userId: {$in: userIds}
+        }
+      });
+    }
 
     _.each(userIds, (id)=> {
-      notificationStream.emit(id, {
+      let notification = {
         from: user.profile.name,
-        room: roomId,
+        owner: id,
+        roomId,
         url: urlJoin(roomURL, roomId),
         type
-      });
+      };
+
+      if (type === 'invite') {
+        // create a notification object
+        let notId = Notifications.insert(notification);
+        _.extend(notification, {id: notId});
+      }
+
+      // emit a notification to the receiver
+      notificationStream.emit(id, notification);
     });
   }
 }

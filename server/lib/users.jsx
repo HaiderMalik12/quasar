@@ -19,7 +19,7 @@
  *
  */
 
-var Schema = {};
+let Schema = {};
 
 Schema.UserProfile = new SimpleSchema({
   name: {

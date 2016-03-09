@@ -42,6 +42,16 @@ var NotificationStore = function() {
 
   _this.accept = ()=> {
     let data = _this.invitations.get().shift();
+    if (!!data.id) {
+      Notifications.update({
+        _id: data.id
+      }, {$set: {
+      viewed: true}}, (err, res)=> {
+        if (err) {
+          console.error(err);
+        }
+      });
+    }
     _this.invitations.set(_this.invitations.get().slice());
     RoomStore.joinRoom(data.room);
   };
@@ -100,7 +110,17 @@ var NotificationStore = function() {
             notification = new Notification(title, options);
             notification.onclick = ()=> {
               notification.close();
-              window.location = data.url;
+              if (!!data.id) {
+                Notifications.update({
+                  _id: data.id
+                }, {$set: {
+                viewed: true}}, (err, res)=> {
+                  if (err) {
+                    console.error(err);
+                  }
+                  window.location = data.url;
+                });
+              }
               return;
             };
             data.notification = notification;
@@ -115,6 +135,11 @@ var NotificationStore = function() {
           let invitation = _.findWhere(_this.invitations.get(), {room: data.room});
           if (!!invitation && !!invitation.notification) {
             invitation.notification.close();
+            if (invitation.notification.id) {
+              // // maybe update the notification if uninvited
+              // Notifications.update({_id: invitation.notification.id}, {
+              // });
+            }
           }
           _this.invitations.set(
             _.reject(_this.invitations.get(), (invitation)=> {
@@ -129,7 +154,17 @@ var NotificationStore = function() {
 
   _this.reject = ()=> {
     // remove the first element from the invitations queue
-    _this.invitations.get().shift();
+    let data = _this.invitations.get().shift();
+    if (!!data.id) {
+      Notifications.update({
+        _id: data.id
+      }, {$set: {
+      viewed: true}}, (err, res)=> {
+        if (err) {
+          console.error(err);
+        }
+      });
+    }
     _this.invitations.set(_this.invitations.get().slice());
   };
 

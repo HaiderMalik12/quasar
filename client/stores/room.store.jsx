@@ -126,6 +126,7 @@ var RoomStore = function() {
       if (invitees && invitees.length) {
         Meteor.call('notifyInvitees', _this.currentRoomId.get(), invitees, 'uninvite', (err, res)=> {
           if (err) {
+            console.error(err);
             _this.inviteError.set(err);
           } else {
             // sent

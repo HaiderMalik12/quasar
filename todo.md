@@ -13,4 +13,5 @@
 - show contact photo in answer-overlay
 - smarter search --> use first or last name and email (got the name and email so far)
 - small photo bug when first downloading with CollectionFS
+- update push notification if missed call
 https://github.com/CollectionFS/Meteor-CollectionFS/issues/591
