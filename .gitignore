@@ -4,3 +4,4 @@ settings.json
 /public/downloads
 node_modules
 config.push.json
+node_modules/
